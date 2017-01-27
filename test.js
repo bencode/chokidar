@@ -27,6 +27,7 @@ var watcher,
     subdir = 0,
     options,
     node010 = process.version.slice(0, 5) === 'v0.10',
+    osXTravis,
     osXFsWatch,
     osXFsWatch010,
     win32Polling,
@@ -115,13 +116,14 @@ function runTests(baseopts) {
   baseopts.persistent = true;
 
   before(function() {
-    // flags for bypassing special-case test failures on CI
+    // flags for bypassing special-case test failures
     osXFsWatch = os === 'darwin' && !baseopts.usePolling && !baseopts.useFsEvents;
     osXFsWatch010 = osXFsWatch && node010;
     win32Polling = os === 'win32' && baseopts.usePolling;
     win32Polling010 = win32Polling && node010;
+    osXTravis = os === 'darwin' && process.env.TRAVIS;
 
-    if (win32Polling010) {
+    if (win32Polling010 || osXTravis) {
       slowerDelay = 900;
     } else if (node010 || osXFsWatch) {
       slowerDelay = 200;
